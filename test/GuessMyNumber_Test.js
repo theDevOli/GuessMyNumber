@@ -1,41 +1,67 @@
-//Array of wrong guesses
-const wrongGuesses = [];
+/* eslint-disable no-undef */
+const assert = chai.assert;
+// const { joinArr, checkErrors, handleLowerOrHigher } = require('./../script.js');
 
-/**
- *Change the array (Between,1,and,100) to (Between[0] 1[1] and[2] 100)[3]
- * @param {array} arr - The array of the range between max and min values
- * @returns string
- */
-const joinArr = (arr) => arr.join(' ');
+describe('Guessing Game', () => {
+  describe('joinArr', () => {
+    it('Return a string from a joined array', () => {
+      const expected = '(Between 1 and 100)';
+      const actual = joinArr(['(Between', '1', 'and', '100)']);
+      assert.equal(expected, actual);
+    });
+  });
 
-/**
- *Check for errors
- * @param {number} guess - User's guess
- * @param {array} range - Last value of the range
- * @returns - true if the data is invalid
- *          - false if the data is valid
- */
-const checkErrors = (guess, range) => {
-  const min = +range[1];
-  const max = Number(range[3].replace(')', ''));
+  describe('checkErrors', () => {
+    it('Return true for invalid data(The guess is out of range)', () => {
+      const expected = true;
+      const actual = checkErrors(150, ['(Between', '1', 'and', '100)']);
+      assert.equal(expected, actual);
+    });
 
-  if (wrongGuesses.length === 0) return !guess || guess < 0 || guess > 100;
-  else if (guess > min && guess < max) return false;
-};
+    it('Return true for invalid data(The guess is greater than the range)', () => {
+      const expected = true;
+      const actual = checkErrors(15, ['(Between', '1', 'and', '10)']);
+      assert.equal(expected, actual);
+    });
 
-/**
- *This ftn will update the range of both max and min values
- * @param {boolean} isLower - A bool that determines if the guess is higher or lower than the guessNumber
- * @param {array} range - The array of the range between max and min values
- * @param {number} guess - User's guess
- * @returns string
- */
-const handleLowerOrHigher = (isLower, range, guess) => {
-  if (isLower) {
-    range[1] = `${guess}`;
-    return `👇 Too Low. Please type a number: ${joinArr(range)}`;
-  } else {
-    range[3] = `${guess})`;
-    return `☝️ Too High. Please type a number: ${joinArr(range)}`;
-  }
-};
+    it('Return true for invalid data(The guess is empty string)', () => {
+      const expected = true;
+      const actual = checkErrors('', ['(Between', '50', 'and', '100)']);
+      assert.equal(expected, actual);
+    });
+
+    it('Return true for invalid data(The guess is negative)', () => {
+      const expected = true;
+      const actual = checkErrors(-1, ['(Between', '1', 'and', '100)']);
+      assert.equal(expected, actual);
+    });
+
+    it('Return false for valid data', () => {
+      const expected = false;
+      const actual = checkErrors(10, ['(Between', '1', 'and', '100)']);
+      assert.equal(expected, actual);
+    });
+  });
+
+  describe('handleLowerOrHigher', () => {
+    it('Return a string "👇 Too Low. Please type a number: (Between  50 and 100)"', () => {
+      const expected = '👇 Too Low. Please type a number: (Between 50 and 100)';
+      const actual = handleLowerOrHigher(
+        true,
+        ['(Between', '1', 'and', '100)'],
+        50
+      );
+      assert.equal(expected, actual);
+    });
+
+    it('Return a string "☝️ Too High. Please type a number: (Between  50 and 100)"', () => {
+      const expected = '☝️ Too High. Please type a number: (Between 1 and 50)';
+      const actual = handleLowerOrHigher(
+        false,
+        ['(Between', '1', 'and', '100)'],
+        50
+      );
+      assert.equal(expected, actual);
+    });
+  });
+});

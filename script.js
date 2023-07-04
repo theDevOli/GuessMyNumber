@@ -1,11 +1,23 @@
-//Creating a Global variable for the guessing Number
-let guessNumber = Math.trunc(Math.random() * 100) + 1;
+/* eslint-disable no-undef */
+/**
+ * This ftn genarates random numbers between 1 and 100
+ * @returns A random number
+ */
+const randomNumber = () => Math.trunc(Math.random() * 100) + 1;
 
+//Creating a Global variable for the guessing Number
+let guessNumber = randomNumber();
 //Array of wrong guesses
 const wrongGuesses = [];
 //Array of highScore
-let highScore = 0;
+const highScore = 0;
 
+/**
+ * Creates an array from the range data
+ * @returns An array of range
+ */
+const createRangeArray = () =>
+  document.querySelector('.between').textContent.split(' ');
 /**
  *Change the array (Between,1,and,100) to (Between[0] 1[1] and[2] 100)[3]
  * @param {array} arr - The array of the range between max and min values
@@ -14,7 +26,15 @@ let highScore = 0;
 const joinArr = (arr) => arr.join(' ');
 
 /**
- *Check for errors
+ *This ftn will display a massage to the user
+ * @param {string} message -The game massage that will be displayed to the user
+ */
+const displayMessage = (message) => {
+  document.querySelector('.message').textContent = message;
+};
+
+/**
+ *This ftn will check for errors
  * @param {number} guess - User's guess
  * @param {array} range - Last value of the range
  * @returns - true if the data is invalid
@@ -23,9 +43,12 @@ const joinArr = (arr) => arr.join(' ');
 const checkErrors = (guess, range) => {
   const min = +range[1];
   const max = Number(range[3].replace(')', ''));
-
-  if (wrongGuesses.length === 0) return !guess || guess < 0 || guess > 100;
-  else if (guess > min && guess < max) return false;
+  if (guess < 0 || guess > 100) return true;
+  if (!guess) return true;
+  if (wrongGuesses.includes(guess)) return true;
+  if (guess > max) return true;
+  if (guess < min) return true;
+  return false;
 };
 
 /**
@@ -40,79 +63,93 @@ const handleLowerOrHigher = (isLower, range, guess) => {
     range[1] = `${guess}`;
     document.querySelector('.between').textContent = joinArr(range);
     return `👇 Too Low. Please type a number: ${joinArr(range)}`;
-  } else {
-    range[3] = `${guess})`;
-    document.querySelector('.between').textContent = joinArr(range);
-    return `☝️ Too High. Please type a number: ${joinArr(range)}`;
   }
+  range[3] = `${guess})`;
+  document.querySelector('.between').textContent = joinArr(range);
+  return `☝️ Too High. Please type a number: ${joinArr(range)}`;
 };
+
 /**
  * Decreases the score by 1 and updates the score
  */
 const decreaseScore = () => {
   let score = +document.querySelector('.score').textContent;
   score--;
-  document.querySelector('.score').textContent = score + '';
+  document.querySelector('.score').textContent = score.toString();
 };
+
+/**
+ * This ftn will change the layout when the user wins or reset the layout when the user clicks on again btn
+ */
+const winTemplate = () => {
+  const body = document.querySelector('body');
+  const number = document.querySelector('.number');
+  const theUserWon = body.classList.contains('winBody');
+  if (!theUserWon) {
+    body.classList.add('winBody');
+    number.classList.add('winNumber');
+    number.textContent = guessNumber;
+  } else {
+    body.classList.remove('winBody');
+    number.classList.remove('winNumber');
+    number.textContent = '?';
+  }
+};
+
 /**
  * ftn for the event listener
  */
 const checkBtn = () => {
-  if (typeof window !== 'undefined') {
-    //Show the range of numbers
-    let range = document.querySelector('.between').textContent.split(' ');
+  //Show the range of numbers
+  const range = createRangeArray();
 
-    //The input(guess) converted to number
-    const guess = Number(document.querySelector('.guess').value);
+  //The input(guess) converted to number
+  const guess = Number(document.querySelector('.guess').value);
 
-    //The message that updates he user
-    const lblMessage = document.querySelector('.message');
+  //Get the score
+  const score = +document.querySelector('.score').textContent;
 
-    //Get the score
-    let score = +document.querySelector('.score').textContent;
-
-    //Invalid data
-    if (checkErrors(guess, range)) {
-      lblMessage.textContent = `⛔ Please type a number: ${joinArr(range)}`;
-    }
-    //Guess bigger
-    else if (guess > guessNumber) {
-      wrongGuesses.push(guess);
-      lblMessage.textContent = handleLowerOrHigher(false, range, guess);
-      decreaseScore();
-    }
-    //Guess lower
-    else if (guess < guessNumber) {
-      wrongGuesses.push(guess);
-      lblMessage.textContent = handleLowerOrHigher(true, range, guess);
-      decreaseScore();
-    } else if (score === 0) lblMessage.textContent = '😭 Sorry, you lost!';
-    else {
-      //Show the correct number on the screen
-      document.querySelector('.number').textContent = guessNumber;
-      //Change the background color of the body
-      document.querySelector('body').classList.add('winBody');
-      document.querySelector('.number').classList.add('winNumber');
-      lblMessage.textContent = '🏆 Congratulations, you win!';
-      let currentScore = +document.querySelector('.score').textContent;
-      currentScore > highScore
-        ? currentScore === highScore
-        : currentScore === currentScore;
-      document.querySelector('.highscore').textContent = currentScore + '';
-    }
-    wrongGuesses.sort((a, b) => a - b);
+  //Invalid data
+  if (checkErrors(guess, range)) {
+    displayMessage(`⛔ Please type a number: ${joinArr(range)}`);
   }
+  //Guess bigger
+  else if (guess > guessNumber) {
+    wrongGuesses.push(guess);
+    displayMessage(handleLowerOrHigher(false, range, guess));
+    decreaseScore();
+  }
+  //Guess lower
+  else if (guess < guessNumber) {
+    wrongGuesses.push(guess);
+    displayMessage(handleLowerOrHigher(true, range, guess));
+    decreaseScore();
+  } else if (score === 0) displayMessage('😭 Sorry, you lost!');
+  else {
+    winTemplate();
+    // //Show the correct number on the screen
+    // document.querySelector('.number').textContent = guessNumber;
+    // //Change the background color of the body
+    // document.querySelector('body').classList.add('winBody');
+    // document.querySelector('.number').classList.add('winNumber');
+    displayMessage('🏆 Congratulations, you win!');
+    const currentScore = +document.querySelector('.score').textContent;
+    const newScore = currentScore > highScore ? currentScore : highScore;
+    document.querySelector('.highscore').textContent = newScore.toString();
+  }
+  wrongGuesses.sort((a, b) => a - b);
 };
 
 const resetBtn = () => {
+  winTemplate();
   //Remove CSS from the body and change the square (put the question mark and make it narrower)
-  document.querySelector('body').classList.remove('winBody');
-  document.querySelector('.number').classList.remove('winNumber');
-  document.querySelector('.number').textContent = '?';
+  // document.querySelector('body').classList.remove('winBody');
+  // document.querySelector('.number').classList.remove('winNumber');
+  // document.querySelector('.number').textContent = '?';
 
   //Reset the message, create another random number and clear the wrongGuesses array.
-  document.querySelector('.message').textContent = 'Start guessing...';
-  guessNumber = Math.trunc(Math.random() * 100) + 1;
+  displayMessage('Start guessing...');
+  guessNumber = randomNumber();
   wrongGuesses.length = 0;
 
   //Clear the txtBox and reset the score
@@ -120,7 +157,7 @@ const resetBtn = () => {
   document.querySelector('.score').textContent = '20';
 
   //Reset the range of min and max values
-  let range = document.querySelector('.between').textContent.split(' ');
+  const range = createRangeArray();
   range[1] = '1';
   range[3] = '100)';
   document.querySelector('.between').textContent = joinArr(range);
