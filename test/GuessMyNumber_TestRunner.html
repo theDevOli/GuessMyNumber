@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Testing TriangleUtils</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- mocha stylesheet -->
+    <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
+  </head>
+
+  <body>
+    <h1>Testing TriangleUtils</h1>
+    <div id="mocha">
+      <!-- output will go here -->
+    </div>
+    <script src="https://unpkg.com/chai/chai.js"></script>
+    <script src="https://unpkg.com/mocha/mocha.js"></script>
+
+    <script class="mocha-init">
+      mocha.setup('bdd'); // defines "describe", "it", etc.
+      mocha.checkLeaks(); // (optional) makes tests fail if code exposes globals
+    </script>
+    <script src="GuessMyNumber.js"></script>
+    <!-- the code to be tested -->
+    <script src="GuessMyNumber_Test.js"></script>
+    <!-- the tests: "describe", "it", etc -->
+    <script class="mocha-exec">
+      mocha.run();
+      /*
+       * mocha.run() does the following:
+       *   - looks for instances of "describe", "it", etc.
+       *     (which are enabled by mocha.setup('bdd'))
+       *   - run them and puts the output in #mocha
+       */
+    </script>
+  </body>
+</html>

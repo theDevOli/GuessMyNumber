@@ -1,0 +1,18 @@
+{
+  "name": "guess-my-number",
+  "version": "1.0.0",
+  "description": "The user will try to guess a random number",
+  "main": "script.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Oli (Daniel Oliveira)",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0"
+  }
+}
